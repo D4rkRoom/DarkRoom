@@ -98,6 +98,13 @@
     const form = document.getElementById('videoForm');
     const videoList = document.getElementById('videoList');
 
+    // Carregar vídeos salvos do LocalStorage ao carregar a página
+    window.onload = () => {
+      const savedVideos = JSON.parse(localStorage.getItem('videos')) || [];
+      savedVideos.forEach(video => displayVideo(video));
+    };
+
+    // Lidar com envio de formulário
     form.addEventListener('submit', (event) => {
       event.preventDefault();
 
@@ -110,22 +117,33 @@
       }
 
       const videoURL = URL.createObjectURL(videoFile);
+      const videoData = { title, videoURL };
 
+      // Salvar o vídeo no LocalStorage
+      const savedVideos = JSON.parse(localStorage.getItem('videos')) || [];
+      savedVideos.push(videoData);
+      localStorage.setItem('videos', JSON.stringify(savedVideos));
+
+      // Exibir o vídeo na página
+      displayVideo(videoData);
+
+      // Limpar o formulário
+      form.reset();
+    });
+
+    // Função para exibir um vídeo na lista
+    function displayVideo({ title, videoURL }) {
       const videoItem = document.createElement('div');
       videoItem.classList.add('video-item');
       videoItem.innerHTML = `
         <h3>${title}</h3>
         <video controls>
-          <source src="${videoURL}" type="${videoFile.type}">
+          <source src="${videoURL}" type="video/mp4">
           Seu navegador não suporta vídeos.
         </video>
       `;
-
       videoList.appendChild(videoItem);
-
-      // Limpar o formulário
-      form.reset();
-    });
+    }
   </script>
 </body>
 </html>
